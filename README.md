@@ -14,3 +14,9 @@ The project should focus on at least one of the following three tasks:
 * comparing different time series forecasting models
 * optimizing the hyperparameters of a ML or Deep Neural Network
 * automizing the model selection 
+
+How to generate the report pdf based on the markdown file:
+1) add visual studio extension: Markdown PDF by yzane
+2) Open the Markdown file
+3) Press F1 or Ctrl+Shift+P
+4) Type export and select e.g. markdown-pdf: Export (pdf)
