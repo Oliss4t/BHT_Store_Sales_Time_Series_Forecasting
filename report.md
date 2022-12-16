@@ -244,4 +244,4 @@ End of the section, they won't be a problem anymore!
 
 
 # Model Comparisson
-dont base evaluation on only one metric. Use multiple ones
+dont base evaluation on only one metric. Use multiple ones 
