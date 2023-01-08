@@ -6,13 +6,27 @@ Learning Optimazation Report
 
 # Guidlines
 10-12 pages pdf excluding the title page, the table of contents, and list of references
-A written documentation about the project work including:
+* <font style='color: #000000; background-color: #FF0000'>**remove guidlines before submitting.**</font> 
+
+# Project Goal and Outline
+
+<font style='color: #000000; background-color: #FF0000'>**write text covering the following points**</font> 
 * a detailed description of the problem
-* a description of the data set(s) and data pre-processing
 * an introduction to the solution method(s)
-* an exact description of the optimization method used
-* a discussion of the solutions obtained
-* a short presentation of the project work in the beginning of January. The duration of the presentation shall be about 30 minutes.
+    * what methods did we use
+* our outline
+    * split the train set into train and validation data
+    * use the train data to train the different algorithms. We predict the overall sales of a day over all products and stores.
+    * use the validation data to create the validation error and compare the model performances
+    * the best model is then picked and a top down approach is done to distribute the overall sales predictions to the products and store combination.
+    * submit our results to kaggle and Evaluate the performance
+* Discussion and futur work 
+
+Our tactic for model selection is as follows: simply compare the below models with the aforementioned baseline models, predicting solely on the date and ignoring the family and store categories (i.e. we will group by date). The assumption here is that the model that performs best under this simplified process will also perform better when the family and store categories are taken into account. 
+
+This is a 'top-down' approach to this type of forecasting. We will rely on the distribution of the sales amongst the stores and families in the train dataset as our basis for how to divide up the sales that occur on a given day to the various stores and families. This will be how we make our final prediction for each id in the test set.
+
+Our metric for selection, as per the instructions in the kaggle competition, is the Root Mean Squared Logarithmic Error (RMSLE).
 
 # Data and Information
 
@@ -29,7 +43,15 @@ Additional notes for the challenge are:
 * Wages in the public sector are paid every two weeks on the 15th and on the last day of the month. Supermarket sales could be affected by this.
 * A magnitude 7.8 earthquake struck Ecuador on April 16, 2016. People rallied in relief efforts donating water and other needed products which greatly affected supermarket sales for several weeks after the earthquake.
 
+## Preprocessing
+
+The preprocessing we done is mainly restricted to the train, test and the holidays and events data. The first thing we done is splitting the train data into a taining and validation set. The Training data will be used for training, the validation data will be used for model comparison. We then aggregated the train, validation and test set by date over all stores and product families to get the overall sales at a given date. We used that datastructure for all of the follwing models: Exponential Smoothing, Double Exponential Smoothing, SARIMA and Random Forest. 
+
+For the Prophet model we additonally used the holidays and events data as well as the on-promotion feature. The holidays and events data needed quite some preprocessing as some national holidays have been transferred and it needs to be accounted for that. Additonally there are regional and local events and holidays which make it even more complicated. As we havent used the regional feature we decided to only include the national events and holdays as they apply for the whole contry and therefore all stores.
+
 # EDA
+
+<font style='color: #000000; background-color: #FF0000'>**reevaluate what to cover, after model comparisson. we can easily leave some stuff out**</font> 
 
 ## Transactions
 
@@ -97,6 +119,8 @@ We see a positive correlation between onpromotion and total sales. A bigger onpr
 
 ### Autocorrelation - How are timeseries correlated to their lags?
 
+<font style='color: #000000; background-color: #FF0000'>**finalize explanation, i think is useful for the parameter selection of the SARIMA model**<font> 
+
 Just as correlation measures the extent of a linear relationship between two variables, autocorrelation measures the linear relationship between lagged values of a time series. The lag features means shifting a time series forward one step or more than one. So, a lag feature can use in the model to improve it. 
 However, how many lag features should be inside the model? For understanding that, we can use ACF and PACF. 
 
@@ -128,6 +152,8 @@ Next we see the ACF and PACF for 365 days.
 
 
 ### STL decomposition (univariate) 
+<font style='color: #000000; background-color: #FF0000'>**explain STL decomposition**</font> 
+
 , trend, season, reminder. reminder should be white noise, shouldnt be trend, if pattern, there must be some feature which influences our data.
 
 ![stl_decomposition](./figs/stl_decomposition.png)
@@ -135,16 +161,13 @@ Next we see the ACF and PACF for 365 days.
 
 
 # Forecasting
-
-## Zero Forecasting
-
-Some stores don't sell some product families. Thereby it isn't difficult to forecast them next 15 days. Their forecasts must be 0 next 15 days.
-
-I will remove them from the data and create a new data frame for product families which never sell. Then, when we are at submission part, I will combine that data frame with our predictions.
+In the following chapter we applied the models introduced in the outline. We trained each model on the training data and evaluated it based on the evaluation set. For each forcasting method we give a detailed explanation how it works and share the optained metric results. 
 
 ## Baseline model - Exponential Smoothing
 
 We start of with a baseline model. The naive forecast would be using the last value or a moving average. What we choose as a basline is the simple univariate model exponential smoothing.
+
+<font style='color: #000000; background-color: #FF0000'>**Explanation of Exponential Smoothing**</font>
 
 
 Is ist addative or multuplicative?
@@ -163,19 +186,17 @@ Can ask her on Wednesday as well
 
 ![exponential_smoothing](./figs/exponential_smoothing.png)
 
-### Double Exponential Smoothing
+## Double Exponential Smoothing
+<font style='color: #000000; background-color: #FF0000'>**Explanation of Double Exponential Smoothing**</font>
+
 Double exponential smoothing is used when there is a trend in the time series. In that case, we use this technique, which is simply a recursive use of exponential smoothing twice.
 
 ![douoble_exponential_smoothing](./figs/douoble_exponential_smoothing.png)
 
 
-### Datapreprocessing
+## SARIMA model
 
-For the earthquake :
-we can add a boolean as a regressor for the more complex ones
-for the univaiate ones we can simply impute the timeframe by predicting the values by creating a model up to this point
-
-## SARIMA mode
+<font style='color: #000000; background-color: #FF0000'>**Explanation of SARIMA model**</font>
 
 The autocorrelation for an observation and an observation at a prior time step is comprised of both the direct correlation and indirect correlations. These indirect correlations are a linear function of the correlation of the observation, with observations at intervening time steps. It is these indirect correlations that the partial autocorrelation function seeks to remove.
 To find it, we look at the partial autocorrelation plot and identify the lag after which most lags are not significant.
@@ -195,22 +216,17 @@ The main takeaway is: before modelling with SARIMA, we must apply transformation
 https://towardsdatascience.com/the-complete-guide-to-time-series-analysis-and-forecasting-70d476bfe775
 
 
-
-
-
 ![stl_decomposition](./figs/sarima_model.png)
 
-### Potential Models
 
-Our tactic for model selection is as follows: simply compare the below models with the aforementioned baseline models, predicting solely on the date and ignoring the family and store categories (i.e. we will group by date). The assumption here is that the model that performs best under this simplified process will also perform better when the family and store categories are taken into account. 
+## Prophet
 
-This is a 'top-down' approach to this type of forecasting. We will rely on the distribution of the sales amongst the stores and families in the train dataset as our basis for how to divide up the sales that occur on a given day to the various stores and families. This will be how we make our final prediction for each id in the test set.
+<font style='color: #000000; background-color: #FF0000'>**Explanation of SARIMA model**</font>
 
-Our metric for selection, as per the instructions in the kaggle competition, is the Root Mean Squared Logarithmic Error (RMSLE).
-
-## complex multivariate model - Prophet
 Prophet is from facebook
+complex multivariate model - 
 you can add holiday events
+
 coeffiicents are interpretal as well
 
 For the earthquake :
@@ -218,30 +234,40 @@ we can add a boolean as a regressor for the more complex ones
 
 ## Random Forest
 
+<font style='color: #000000; background-color: #FF0000'>**explain Random Forest**</font> 
+
 Our other candidate is the random forest. This model is optimised using a simple Grid Search with Cross Validation for hyperparameter optimisation. It produces a RMSLE of 0.27416784190891913 and from a superficial glance, it produces a nice prediciton plot:
 
 ![rf](./figs/randomforest.png)
 
-## Distribution
+
+# Model Comparisson
+dont base evaluation on only one metric. Use multiple ones, but also the one from the competition.
+* Root Mean Squared Logarithmic Error (RMSLE)
+* ...
+
+<font style='color: #000000; background-color: #FF0000'>**discussion of the solutions obtained**</font> 
+
+## Distribution for Top-Down Approach
 
 There are 54 stores and 33 families which leads to 1782 possible combinations of the two being produced. The proportion of sales for each of these combinations has been found and this will be applied to the 'bottom' part of our approach to help us figure out how the sales on a given predicted day ought to be divided up. The distribution for each of the stores and familes can be inspected below.
+
+<font style='color: #000000; background-color: #FF0000'>**maybe only the last couple of weeks? read paragraph below**</font> 
+The proportions are quite stable over time, therefore we'll use the last week of available data to calculate proportions over that week and repeat that weekly pattern to forecast the future proportions. It's a big assumption but acceptable for what we are trying to do.
 
 ![stores](./figs/store_sales.png)
 
 ![families](./figs/family_sales.png)
 
-### Holiday dataset
+Note, we found that out that some stores don't sell some product families during EDA. This is also covered by the top-down approach.
 
-What are the problems with the given dataset:
+# Future Work and Discussion 
+<font style='color: #000000; background-color: #FF0000'>**write chapter**</font>
 
-Some national holidays have been transferred.
-There might be a few holidays in one day. When we merged all of data, number of rows might increase. We don't want duplicates.
-What is the scope of holidays? It can be regional or national or local. You need to split them by the scope.
-Work day issue
-Some specific events
-Creating new features etc.
-End of the section, they won't be a problem anymore!
+Further points to improve. Reference points we noticed during EDA. e.g.:
 
-
-# Model Comparisson
-dont base evaluation on only one metric. Use multiple ones 
+* stores 20, 21, 22, and 52, may be a little different.
+* havent used the oil price data. countrys economy is really dependent on oil price
+* Transactions havent used
+* havent used information about Wages in the public sector are paid every two weeks on the 15th and on the last day of the month. Supermarket sales could be affected by this.
+* havent taken into acount the earthquake
