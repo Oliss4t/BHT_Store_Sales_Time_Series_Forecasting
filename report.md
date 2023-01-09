@@ -119,36 +119,13 @@ We see a positive correlation between onpromotion and total sales. A bigger onpr
 
 ### Autocorrelation - How are timeseries correlated to their lags?
 
-<font style='color: #000000; background-color: #FF0000'>**finalize explanation, i think is useful for the parameter selection of the SARIMA model**<font> 
+Just as correlation measures the extent of a linear relationship between two variables, autocorrelation measures the linear relationship between lagged values of a time series. The lag features means shifting a time series forward one step or more than one. This autocorrelation for an observation and an observation at a prior time step is comprised of both the direct correlation and indirect correlations. These indirect correlations are a linear function of the correlation of the observation, with observations at intervening time steps. The partial autocorrelation function removes those indirect correlations.
 
-Just as correlation measures the extent of a linear relationship between two variables, autocorrelation measures the linear relationship between lagged values of a time series. The lag features means shifting a time series forward one step or more than one. So, a lag feature can use in the model to improve it. 
-However, how many lag features should be inside the model? For understanding that, we can use ACF and PACF. 
+To better understand the data we can use the autocorrelation function (ACF) and partial autocorrelation function (PACF) and identify the siginificant lag features, that we should include into the model. We see can clearly see a 7 lag period in the ACF, which corresponds to a weekly periodicity. That was already expected, but it is good to have some statistical backing. The PACF shows a bigger partial autocorrelation for the 1,6 and 7 lags. Those lags could be interesting to includ in the model.
 
+Additionnally we also check the timeseries for stationarity. A time series is said to be stationary if its statistical properties do not change over time. In other words, it has constant mean and variance, and covariance is independent of time. We run the Dickey-Fuller statistical test to determine if a time series is stationary or not. The Dickey-Fuller-Test tests if a unit root is present. As the p value is at 0.0897 and bigger than 5%, we can not reject the nullhypothesis, and therefore have to assume that the process is not stationary.
 
-
-Seasonality:
-We see can clearly see a 7 lag period, which corresponds to a weekly periodicity. That was already expected, but it is good to have some statistical backing to our idea.
-
-
-Stationarity is an important characteristic of time series. A time series is said to be stationary if its statistical properties do not change over time. In other words, it has constant mean and variance, and covariance is independent of time. We can run the Dickey-Fuller statistical test to determine if a time series is stationary or not. The Dickey-Fuller tests if a unit root is present. As the p value is at 0.089 and bigger than 5%, the process is not stationary.
-
-
-
-
-Next we see the ACF and PACF for the whole timeperiod.
-![ACF_PACF](./figs/ACF_PACF.png)
-
-Next we see the ACF and PACF for 7 days.
-
-![tsplot_7](./figs/tsplot_7.png)
-Next we see the ACF and PACF for 30 days.
-We can see the weekly structure and slight downtrend.
 ![tsplot_30](./figs/tsplot_30.png)
-Next we see the ACF and PACF for 90 days.
-We can see downtrend in correlation for lags in the past.
-![tsplot_90](./figs/tsplot_90.png)
-Next we see the ACF and PACF for 365 days.
-![tsplot_365](./figs/tsplot_365.png)
 
 
 ### STL decomposition (univariate) 
@@ -196,41 +173,27 @@ Double exponential smoothing is used when there is a trend in the time series. I
 
 ## SARIMA model
 
-<font style='color: #000000; background-color: #FF0000'>**Explanation of SARIMA model**</font>
+The SARIMA model acronym stands for "Seasonal Auto-Regressive Integrated Moving Average". 
 
-The autocorrelation for an observation and an observation at a prior time step is comprised of both the direct correlation and indirect correlations. These indirect correlations are a linear function of the correlation of the observation, with observations at intervening time steps. It is these indirect correlations that the partial autocorrelation function seeks to remove.
-To find it, we look at the partial autocorrelation plot and identify the lag after which most lags are not significant.
-
-For modeling the SARIMA-model we first have the autoregression model AR(p). This is basically a regression of the time series onto itself. Here, we assume that the current value depends on its previous values with some lag. It takes a parameter p which represents the maximum lag. To find it, we look at the partial autocorrelation plot and identify the lag after which most lags are not significant.
-
-Choose 14?
-
-After, we add the order of integration I(d). The parameter d represents the number of differences required to make the series stationary.
-
-Finally, we add the final component: seasonality S(P, D, Q, s), where s is simply the season’s length. Furthermore, this component requires the parameters P and Q which are the same as p and q, but for the seasonal component. Finally, D is the order of seasonal integration representing the number of differences required to remove seasonality from the series.
-
+The "autoregressive" (AR) component of the model is represented by AR(p), with the p parameter determining the number of lagged series that we use. <font style='color: #000000; background-color: #FF0000'>**As we found out in the ACF and PACF (chapter "Autocorrelation"), the first 7 lags, particular lag 1,6 and 7 are interesting for that**</font>. After the first 7 lags it repeats itslef and the lags are not significant anymore. The "integrated" (I) is the difference order, which is the number of transformations (d) needed to make the data stationary. The parameter d represents the number of differences required to make the series stationary. As we have found out in chapter "Autocorrelation" that we have to assume non-stationary for our series, that comes in handy. The "moving mverage" (MA) is the moving average model with its parameter q as the number of included error lags. In an MA(1) model, our forecast is a constant term plus the previous error times a multiplier, added with the current error. The "Seasonal" (S) component extends the ARIMA model with an additional set of autoregressive and moving average components with the parameters S(P, D, Q, s). The parameters P and Q are the same as p and q, but now for the seasonal component. D is again the order of seasonal integration representing the number of differences required to make the series stationary. And Finally, s which is simply the season’s length.
 Combining all, we get the SARIMA(p, d, q)(P, D, Q, s) model.
 
-The main takeaway is: before modelling with SARIMA, we must apply transformations to our time series to remove seasonality and any non-stationary behaviors.
-
-https://towardsdatascience.com/the-complete-guide-to-time-series-analysis-and-forecasting-70d476bfe775
-
+We played around with the parameters and found the best solution with the following settings.
+<font style='color: #000000; background-color: #FF0000'>**Settings**</font>
+The performance on the vaildation data is given in the following table: 
 
 ![stl_decomposition](./figs/sarima_model.png)
 
 
 ## Prophet
 
-<font style='color: #000000; background-color: #FF0000'>**Explanation of SARIMA model**</font>
+The Prophet algorithm was introduced by [Sean J. Taylor and Ben Letham](https://peerj.com/preprints/3190.pdf) from Facebook in 2017. It is designed to be easy and completely automatic. 
+> ["It implements a procedure for forecasting time series data based on an additive model where non-linear trends are fit with yearly, weekly, and daily seasonality, plus holiday effects."](https://cran.r-project.org/web/packages/prophet/prophet.pdf)
 
-Prophet is from facebook
-complex multivariate model - 
-you can add holiday events
+Based on the additive model, we are also able to add regressors which coefficents can be interpreted as in the SARIMAX model. 
 
-coeffiicents are interpretal as well
+We traine three different versions of the Prophet model. First we fit only on the training data. Next we added the preprocessed national holidays and events information as two different holiday types. For the third model we added the "on-promotion" feature as an additional regressor. The performance on the vaildation data of the three models is given in the following table: 
 
-For the earthquake :
-we can add a boolean as a regressor for the more complex ones
 
 ## Random Forest
 
