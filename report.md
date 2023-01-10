@@ -128,14 +128,12 @@ Additionnally we also check the timeseries for stationarity. A time series is sa
 ![tsplot_30](./figs/tsplot_30.png)
 
 
-### STL decomposition (univariate) 
-<font style='color: #000000; background-color: #FF0000'>**explain STL decomposition**</font> 
+### STL decomposition 
 
-, trend, season, reminder. reminder should be white noise, shouldnt be trend, if pattern, there must be some feature which influences our data.
+STL is a robust method for decomposing time series data. The acronym stands for "Seasonal and Trend decomposition using Loess". It decomposes the data into a trend, season and the remaining part. The remainder should ideally be white noise, as a trend or pattern in the noise hints to an underlying feature which influences our data. We set the period parameter to 365 days for the following plot. 
+The trend component is quite clear. We can see an upwards trend for the sales. The seasonal component reveals a yearly pattern. We also got a clear weekly pattern by setting the period parameter to 7 days. The remainder component mostly shows white noise. Except of some outliers above and below. The outliers below are at the same time as our findings during EDA in section "Time Plots". They occure all from the day after New Year's Eve. Good to make the same findings across different methods.
 
 ![stl_decomposition](./figs/stl_decomposition.png)
-
-
 
 # Forecasting
 In the following chapter we applied the models introduced in the outline. We trained each model on the training data and evaluated it based on the evaluation set. For each forcasting method we give a detailed explanation how it works and share the optained metric results. 
@@ -144,32 +142,31 @@ In the following chapter we applied the models introduced in the outline. We tra
 
 We start of with a baseline model. The naive forecast would be using the last value or a moving average. What we choose as a basline is the simple univariate model exponential smoothing.
 
-<font style='color: #000000; background-color: #FF0000'>**Explanation of Exponential Smoothing**</font>
+Exponential smoothing was proposed in the late 1950s and is a method of weighted averages of past observations, with the weights decaying exponentially as the observations get older. It is very simple, but therefore is not capable of modelling a seasonal or trend component. The formula is the following:
 
+Forecast Equation: $\hat{Y}_{t+1} = αy_t + α(1−α)y_{t−1} + α(1−α)^2y_{t−2} + ...$
 
-Is ist addative or multuplicative?
-Needs to be decided based on the seasonality. If the variation of the seasonality is constant, then additive, otherwise multuplicative
+Therefore you only have to set the parameter α and decide how many previous values you want to use for the prediction. We based out prediction only on the last value as a baseline and tried different numbers for alpha out. WE got the following metric scores:
 
-think it is multiplicative:
-
-'The additive decomposition is the most appropriate if the magnitude of the seasonal fluctuations, or the variation around the trend-cycle, does not vary with the level of the time series. When the variation in the seasonal pattern, or the variation around the trend-cycle, appears to be proportional to the level of the time series, then a multiplicative decomposition is more appropriate. Multiplicative decompositions are common with economic time series.'
-
-------------------------------  
-As mentioned already, the fact that the magnitude of the seasonal fluctuations changes with regard to the level of the time series is indicative of us needing to use a multiplicative time series model.
-
-Source: https://otexts.com/fpp2/components.html
-
-Can ask her on Wednesday as well
 
 ![exponential_smoothing](./figs/exponential_smoothing.png)
 
 ## Double Exponential Smoothing
-<font style='color: #000000; background-color: #FF0000'>**Explanation of Double Exponential Smoothing**</font>
 
-Double exponential smoothing is used when there is a trend in the time series. In that case, we use this technique, which is simply a recursive use of exponential smoothing twice.
+The exponential smoothing method got extended by Holt to add a trend component. As we have a clear trend in out data, that is a good idea. The Double Exponential Smoothing involves a forecast equation and two smoothing equations (one for the level and one for the trend) and can be seen in the following:
 
-![douoble_exponential_smoothing](./figs/douoble_exponential_smoothing.png)
+Forecast Equation: $\hat{y}_{t+h} = l_t + hb_t$
 
+Level Equation: $l_t = αy_t + (1−α)(l_{t-1}+b_{t-1})$
+
+Trend Equation: $b_t = β(l_t - l_{t-1}) + (1+β)b_{t-1}$
+
+We have now the new parameter beta and h to set. Alpha is again the smoothing for the level and beta now the smoothing for the trend. The parameter h is the number of steps you want to forecast ahead. As we basing out prediction only on the previous value, we set it to 1. We got the following metric scores for different alphas and betas:
+
+![double_exponential_smoothing](./figs/double_exponential_smoothing.png)
+
+
+There would also be a further additon called Holt-Winters method, whichs adds an additonal seasonal component. For that there are two variations. There is the additive method, which is preferred when the seasonal variations are roughly constant through the series, while the multiplicative method is preferred when the seasonal variations are changing proportional to the level of the series. With our series we would have chosen the multiplicative version. 
 
 ## SARIMA model
 
