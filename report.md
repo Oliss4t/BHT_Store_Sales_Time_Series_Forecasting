@@ -10,7 +10,7 @@ Learning Optimazation Report
 
 # Project Goal and Outline
 
-<font style='color: #000000; background-color: #FF0000'>**write text covering the following points**</font> 
+<font style='color: #000000; background-color: #FF0000'>**write text covering the following points (mostly done)**</font> 
 * a detailed description of the problem
 * an introduction to the solution method(s)
     * what methods did we use
@@ -20,13 +20,19 @@ Learning Optimazation Report
     * use the validation data to create the validation error and compare the model performances
     * the best model is then picked and a top down approach is done to distribute the overall sales predictions to the products and store combination.
     * submit our results to kaggle and Evaluate the performance
-* Discussion and futur work 
+* Discussion and futur work (Still to do or just leave to end of document)
 
-Our tactic for model selection is as follows: simply compare the below models with the aforementioned baseline models, predicting solely on the date and ignoring the family and store categories (i.e. we will group by date). The assumption here is that the model that performs best under this simplified process will also perform better when the family and store categories are taken into account. 
+The task at hand is to build a time-series forecasting model which will make predictions for 15 days after the last date in the train data. The dataset is based on a real-life retailer 'Corporación Favorita' from Ecuador and contains over 1,000,000 entries in the training data, featuring both categorical and continuous features. Additionally, there are other datasets which contain information which could impact sales, such as oil prices over this period, or holidays, which can be incorporated if desired to improve the model performance.
+
+The primary train dataset is to be split into a new train and a validation set. 
+
+Our tactic for model selection is as follows: simply compare the below models with the aforementioned baseline models, predicting solely on the date and ignoring the family and store categories (i.e. we will group by date). The assumption here is that the model that performs best under this simplified process will also perform better when the family and store categories are taken into account.
+
+The baseline methods are Exponential Smoothing, Double Exponential Smoothing, and a SARIMA model. These are then compared with two other models: Prophet, an algorithm by Facebook, and a Random Forest model. For each of these, where relevant, the final parameters chosen were decided upon through a mixture of EDA, trial-and-error, and hyperparameter optimization. 
 
 This is a 'top-down' approach to this type of forecasting. We will rely on the distribution of the sales amongst the stores and families in the train dataset as our basis for how to divide up the sales that occur on a given day to the various stores and families. This will be how we make our final prediction for each id in the test set.
 
-Our metric for selection, as per the instructions in the kaggle competition, is the Root Mean Squared Logarithmic Error (RMSLE).
+Our metric for selection, as per the instructions in the kaggle competition, is the Root Mean Squared Logarithmic Error (RMSLE). However, other metrics will be used in order to better make comparisons between the methods. This comparison of error will be done on the validation set from our earlier splitting of the initial train set. The best model will be decided based on which performs best under this comparison, and then the outlined 'top-down' approach will make the final predictions. 
 
 # Data and Information
 
@@ -196,7 +202,9 @@ We traine three different versions of the Prophet model. First we fit only on th
 
 <font style='color: #000000; background-color: #FF0000'>**explain Random Forest**</font> 
 
-Our other candidate is the random forest. This model is optimised using a simple Grid Search with Cross Validation for hyperparameter optimisation. It produces a RMSLE of 0.27416784190891913 and from a superficial glance, it produces a nice prediciton plot:
+Our other candidate is the random forest. A random forest is a type of ensemble method, in this case similar to bagging for a regression tree; however, fewer parameters are chosen for each step that the tree is grown. This allows for more subtle effects to be found in a random forest than in a bagged regression tree, because in bagging all the dominant variables are contained within each bag, which will mean that variables that produce more nuanced effects on the prediction become crowded out.
+
+This model is optimised using a simple Grid Search with Cross Validation for hyperparameter optimisation in order to choose the the best number of predictor variables to feature in the random forest. It produces a RMSLE of 0.274 and from a superficial glance, it produces a nice prediciton plot:
 
 ![rf](./figs/randomforest.png)
 
