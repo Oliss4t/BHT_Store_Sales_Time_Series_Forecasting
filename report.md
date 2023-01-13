@@ -10,18 +10,6 @@ Learning Optimazation Report
 
 # Project Goal and Outline
 
-<font style='color: #000000; background-color: #FF0000'>**write text covering the following points (mostly done)**</font> 
-* a detailed description of the problem
-* an introduction to the solution method(s)
-    * what methods did we use
-* our outline
-    * split the train set into train and validation data
-    * use the train data to train the different algorithms. We predict the overall sales of a day over all products and stores.
-    * use the validation data to create the validation error and compare the model performances
-    * the best model is then picked and a top down approach is done to distribute the overall sales predictions to the products and store combination.
-    * submit our results to kaggle and Evaluate the performance
-* Discussion and futur work (Still to do or just leave to end of document)
-
 The task at hand is to build a time-series forecasting model which will make predictions for 15 days after the last date in the train data. The dataset is based on a real-life retailer 'Corporación Favorita' from Ecuador and contains over 1,000,000 entries in the training data, featuring both categorical and continuous features. Additionally, there are other datasets which contain information which could impact sales, such as oil prices over this period, or holidays, which can be incorporated if desired to improve the model performance.
 
 The primary train dataset is to be split into a new train and a validation set. 
@@ -199,8 +187,6 @@ We traine three different versions of the Prophet model. First we fit only on th
 
 
 ## Random Forest
-
-<font style='color: #000000; background-color: #FF0000'>**explain Random Forest**</font> 
 
 Our other candidate is the random forest. A random forest is a type of ensemble method, in this case similar to bagging for a regression tree; however, fewer parameters are chosen for each step that the tree is grown. This allows for more subtle effects to be found in a random forest than in a bagged regression tree, because in bagging all the dominant variables are contained within each bag, which will mean that variables that produce more nuanced effects on the prediction become crowded out.
 
