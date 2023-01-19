@@ -1,12 +1,20 @@
-Learning Optimazation Report
-==============
-***Store Sales - Time Series Forecasting***
+---
+title: "Learning Optimazation Report: Store Sales - Time Series Forecasting"
+author: "Conor Fallon; Tassilo Henninger"
+date: "1 17 2023"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    output-file: "Learning_Optimazation_Report.pdf"
+    output-ext:  "pdf"
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
 
-**Author:** *Tassilo Henninger* and *Conor Fallon*
-
-# Guidlines
-10-12 pages pdf excluding the title page, the table of contents, and list of references
-* <font style='color: #000000; background-color: #FF0000'>**remove guidlines before submitting.**</font> 
+\pagebreak
 
 # Project Goal and Outline
 
