@@ -220,6 +220,18 @@ Note, we found that out that some stores don't sell some product families during
 
 Further points to improve. Reference points we noticed during EDA. e.g.:
 
+It is easiest to discuss the above methods by first mentioning particular information that was omitted from our model and could be incorporated into further iterations of our predictive model. 
+
+Firstly, as demonstrated in the EDA, stores 20, 21, 22, and 52 have quite low correlation with the other stores. Further examination could involve an error analysis of how the predictions for these specific stores behave in terms of the difference between predicted and actual test values for these stores. However, it is hopefully the case that the top-down approach, which created pairwise store-family bears captures these anomolies. 
+
+We also excluded the oil data which is potentially a large omission given the country's economy is heavily dependent on the oil price. The reason for this is two-fold: Ecuador is a member of the Organization of the Petroleum Exporting Countries and its oil-production is state-owned, which impacts the strength of the economy, as well as for the government to provide services and social supports, which in turn will affect how much money people have to spend on things; secondly, if oil prices increase, people will have to pay more for goods in general, not only for things like electricity but also for goods in shops, and the prices in shops will likely be higher owing to increased costs of business which will presumably negatively impact how much people can purchase.
+
+Additionally transactions have not been included in our model. It would be a reasonable expectation that this would improve our predictions and would be included in further iterations of our model.
+
+The fact that public wages were not included is another ommission. Perhaps this could be easily incorporated into the Prophet model as a sort of 'holiday' variable. However, one could also argue that the public sector workers are a small enough section of the population that it would not have a significant effect on sales.
+
+Finally, the earthquake that occurred has not been explored in our EDA nor incorporated into our modelling. It is possible that the earthquake had a prolonged and large impact on the dataset. Given earthquakes are relatively rare, unpredictable events, perhaps there would have been an option to interpolate more 'regular' values for this time period in this specific case. In our modelling, there is the implicit hope that the earthquake would be more akin to noise in the data given the rather prolonged time period in question.
+
 * stores 20, 21, 22, and 52, may be a little different.
 * havent used the oil price data. countrys economy is really dependent on oil price
 * Transactions havent used
