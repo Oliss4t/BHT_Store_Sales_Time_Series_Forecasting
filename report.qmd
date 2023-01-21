@@ -304,7 +304,7 @@ The performance of the regression tree on our validation set is as follows:
 
 | model            | RMSLE    | MSE          | MAE        |
 |------------------|----------|--------------|------------|
-| Regresssion Tree | 0.550636 | 8.727469e+10 | 179.858492 |
+| Regression Tree | 0.128111 | 1.104584e+10 | 78066.83 |
 
 A plot of its predictions over the actual data is shown below (@fig-decision-tree) and from a qualitative perspective seems to do a somewhat sensible job
 
@@ -315,18 +315,18 @@ A random forest is a type of ensemble method, in this case similar to bagging fo
 This allows for more subtle effects to be found in a random forest than in a bagged regression tree, because in bagging all the dominant variables are contained within each bag, which will mean that variables that produce more nuanced effects on the prediction become crowded out.
 
 This model is optimised using a simple Grid Search with Cross Validation for hyperparameter optimisation in order to choose the the best number of predictor variables to feature in the random forest.
-It also produces a nice prediction plot (@fig-random-forest):
+It produces a nice prediction plot (@fig-random-forest):
 
-![Random Forest](./figs/random_forest_final.png){#fig-random-forest}
+![Random Forest](./figs/rf_FINAL.png){#fig-random-forest}
 
 The performance of the random forest is as follows:
 
 | model         | RMSLE    | MSE          | MAE        |
 |---------------|----------|--------------|------------|
-| Random Forest | 0.550558 | 8.721638e+10 | 959.910974 |
+| Random Forest | 0.083058 | 0.4648461e+10 | 46158.14 |
 
-The random forest offers only very marginal improvement over the regression tree.
-The regression tree is also calculable hundreds of times quicker which may make it the more preferable choice of model as it allows us to iterate quickly where the random forest does not.
+The random forest performs a lot better than the regression tree. If one looks at the graph at early August, it seems to have captured that particular 'n'-shaped pattern very well which we can see is a recurring type of shape in the data.
+The regression tree is however calculable hundreds of times quicker which may make it the more preferable choice of model as it allows us to iterate quickly where the random forest does not.
 
 \pagebreak
 
@@ -338,8 +338,8 @@ The regression tree is also calculable hundreds of times quicker which may make 
 | Double Exponential Smoothing | 0.139385  | 1.327847e10 | 100600.89  |
 | SARIMA                       | 0.134025              | 1.391188e10 | 83125.15   |
 | Prophet +Holidays            | 0.104714            | 0.840120e10 | 65890.04   |
-| Regresssion Tree             | 0.550636            | 8.727469e10 | 179.858492 |
-| Random Forest                | 0.550558            | 8.721638e10 | 959.910974 |
+| Regresssion Tree             | 0.128111            | 1.104584e+10 | 78066.83 |
+| Random Forest                | 0.083058            | 0.4648461e+10 | 46158.14 |
 
 <font style='color: #000000; background-color: #FF0000'>**discussion of the solutions obtained**</font>
 
