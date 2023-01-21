@@ -343,6 +343,12 @@ The regression tree is however calculable hundreds of times quicker which may ma
 
 <font style='color: #000000; background-color: #FF0000'>**discussion of the solutions obtained**</font>
 
+As we can see above, the random forest performs the best. This is unusual as we would expect the Prophet model to perform best given that it is state of the art. This led us to examine our code and we had, admittedly, made a mistake in our construction of both the decision tree and the random forest. Our model had been allowed 'look' at points in the past, at least implicitly, when it should not have. Hence these models were essentially cheating. Given that this was discovered late in the project, we did not have time to ammend these faults.
+
+That said, given that the regression tree still failed to outperform the Prophet model, even having cheated, it is safe to assume it would not have outperformed it had we done the method correctly. Hence we will use the Prophet model as our 'top' model to use for the final prediction tasks; it performs best on all of our metrics chosen.
+
+Finally, it is worth briefly noting that the SARIMA model outperforms the two exponential smoothing models. This is not unsuprising as SARIMA models have long been a powerful performer in time-series tasks, and its strong performance is further vindication of the arguments put forward for the selection of the SARIMA parameters as discussed earlier on.
+
 ## Distribution for Top-Down Approach
 
 There are 54 stores and 33 families which leads to 1782 possible combinations of the two being produced.
@@ -359,6 +365,8 @@ Also, it is possible that in taking the proportions of only the most recent week
 Note, we found that out that some stores don't sell some product families during EDA.This is also covered by the top-down approach.
 
 ## Prediction of the Final Model
+
+The code underlying how the final predictions were made is visible in the short notebook testing.ipynb. It produced 28512 predictions and these were submitted to Kaggle, giving us a user score of 0.65612, which placed our model in position 718 out of 892. It is hard to say if this is a good score or not, as we would have to know how much effort the other teams had put in to get the results that they did. We hope at the very least that the predictions are somewhat sensible. It is also worth mentioning that this is the only submission that we entered; other teams both above and below us in the rankings had multiple attempts.
 
 \pagebreak
 
