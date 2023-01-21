@@ -1,7 +1,7 @@
 ---
 title: "Learning Optimazation Report: Store Sales - Time Series Forecasting"
 author: "Conor Fallon; Tassilo Henninger"
-date: "1 17 2023"
+date: "1 21 2023"
 format:
   pdf:
     toc: true
@@ -274,7 +274,7 @@ The performance on the validation data of the three models is given in the follo
 |---------------------|-------------------|----------------|----------------|
 | Prophet Baseline               | 0.10672917726787304 | 0.866192e10 | 67894.59 |
 | Prophet +Holidays              | 0.10471472504386517 | 0.840120e10 | 65890.04 |
-| Prophet +Holidaya_OnPromotion | 0.10471472504386517 | 0.840120e10 | 65890.04 |
+| Prophet +Holidays_OnPromotion | 0.10471472504386517 | 0.840120e10 | 65890.04 |
 
 As we can see adding the holidays and events information to the baseline was decreasing every error metric. Adding the additional on-promotion feature on the other hand was not useful for the model. Therefore we stick with the "simpler" Prophet +Holidays model, which is graphically represented in @fig-prophet-holidays.
 On the components plot (@fig-Prophet-Components) of the final prophet model we can clearly see, that it picked up the trend component, the weekly and yearly component of the sales data.
@@ -304,28 +304,32 @@ The performance of the regression tree on our validation set is as follows:
 
 | model            | RMSLE    | MSE          | MAE        |
 |------------------|----------|--------------|------------|
-| Regression Tree | 0.128111 | 1.104584e+10 | 78066.83 |
+| Regression Tree cheated| 0.128111 | 1.104584e+10 | 78066.83 |
+| Regression Tree | 0.307477 | 4.854608e+10 | 198903.99 |
 
-A plot of its predictions over the actual data is shown below (@fig-decision-tree) and from a qualitative perspective seems to do a somewhat sensible job
+The very good performance of our first version of Regression Tree and Random Forest, led us to examine our code and we had, admittedly, made a mistake in our construction of both. Our model had been allowed 'look' at points in the past, at least implicitly, when it should not have. Hence these models were essentially cheating. In a second iteration of both models, we ammend these faults. After that both models were not performing outstanding anymore.
 
-![Decision Tree](./figs/decision_tree.png){#fig-decision-tree}
+A plot of its predictions over the actual data is shown below (@fig-decision-tree). It is of cause not as good as the cheated version in @fig-decision-tree-cheated.
+
+![Decision Tree](./figs/decision_tree_not_cheated.png){#fig-decision-tree}
 
 Our other candidate is the random forest.
 A random forest is a type of ensemble method, in this case similar to bagging for a regression tree; however, fewer parameters are chosen for each step that the tree is grown.
 This allows for more subtle effects to be found in a random forest than in a bagged regression tree, because in bagging all the dominant variables are contained within each bag, which will mean that variables that produce more nuanced effects on the prediction become crowded out.
 
 This model is optimised using a simple Grid Search with Cross Validation for hyperparameter optimisation in order to choose the the best number of predictor variables to feature in the random forest.
-It produces a nice prediction plot (@fig-random-forest):
+It produces the following prediction plot (@fig-random-forest), again not as good as the cheated version in @fig-random-forest-cheated. 
 
-![Random Forest](./figs/rf_FINAL.png){#fig-random-forest}
+![Random Forest](./figs/rf_FINAL_not_cheated.png){#fig-random-forest}
 
 The performance of the random forest is as follows:
 
 | model         | RMSLE    | MSE          | MAE        |
 |---------------|----------|--------------|------------|
-| Random Forest | 0.083058 | 0.4648461e+10 | 46158.14 |
+| Random Forest cheated | 0.083058 | 0.4648461e+10 | 46158.14 |
+| Random Forest | 0.173279 | 2.4810410e+10 | 144618.02 |
 
-The random forest performs a lot better than the regression tree. If one looks at the graph at early August, it seems to have captured that particular 'n'-shaped pattern very well which we can see is a recurring type of shape in the data.
+The random forest performs a better than the regression tree. If one looks at the graph at early August, it seems to have captured that particular 'n'-shaped pattern which we can see is a recurring type of shape in the data.
 The regression tree is however calculable hundreds of times quicker which may make it the more preferable choice of model as it allows us to iterate quickly where the random forest does not.
 
 \pagebreak
@@ -338,14 +342,10 @@ The regression tree is however calculable hundreds of times quicker which may ma
 | Double Exponential Smoothing | 0.139385  | 1.327847e10 | 100600.89  |
 | SARIMA                       | 0.134025              | 1.391188e10 | 83125.15   |
 | Prophet +Holidays            | 0.104714            | 0.840120e10 | 65890.04   |
-| Regresssion Tree             | 0.128111            | 1.104584e+10 | 78066.83 |
-| Random Forest                | 0.083058            | 0.4648461e+10 | 46158.14 |
+| Regression Tree | 0.307477 | 4.854608e+10 | 198903.99 |
+| Random Forest | 0.173279 | 2.481041e+10 | 144618.02 |
 
-<font style='color: #000000; background-color: #FF0000'>**discussion of the solutions obtained**</font>
-
-As we can see above, the random forest performs the best. This is unusual as we would expect the Prophet model to perform best given that it is state of the art. This led us to examine our code and we had, admittedly, made a mistake in our construction of both the decision tree and the random forest. Our model had been allowed 'look' at points in the past, at least implicitly, when it should not have. Hence these models were essentially cheating. Given that this was discovered late in the project, we did not have time to ammend these faults.
-
-That said, given that the regression tree still failed to outperform the Prophet model, even having cheated, it is safe to assume it would not have outperformed it had we done the method correctly. Hence we will use the Prophet model as our 'top' model to use for the final prediction tasks; it performs best on all of our metrics chosen.
+In the first iteration, we made a mistake in the implementation of the decision tree and the random forest. This resulted in outstanding results and led us to examine our code and finally correction our mistake. In the second iteration both tree based models have performed worst. The clear winner across all metrics is the Prophet model. Hence we will use the Prophet model for the final prediction tasks.
 
 Finally, it is worth briefly noting that the SARIMA model outperforms the two exponential smoothing models. This is not unsuprising as SARIMA models have long been a powerful performer in time-series tasks, and its strong performance is further vindication of the arguments put forward for the selection of the SARIMA parameters as discussed earlier on.
 
@@ -366,44 +366,26 @@ Note, we found that out that some stores don't sell some product families during
 
 ## Prediction of the Final Model
 
-The code underlying how the final predictions were made is visible in the short notebook testing.ipynb. It produced 28512 predictions and these were submitted to Kaggle, giving us a user score of 0.65612, which placed our model in position 718 out of 892. It is hard to say if this is a good score or not, as we would have to know how much effort the other teams had put in to get the results that they did. We hope at the very least that the predictions are somewhat sensible. It is also worth mentioning that this is the only submission that we entered; other teams both above and below us in the rankings had multiple attempts.
+The code underlying how the final predictions were made is visible in the short notebook testing.ipynb. It produced 28512 predictions and these were submitted to Kaggle, giving us a user score of 0.65612, which placed our model in position 718 out of 892. A visual representation of the prediction of the unknown test data can be seen in @fig-prophet-test-prediction. 
+
+![Prophet Prediction on Test Data](./figs/prohet_final_test_prediction.png){#fig-prophet-test-prediction}
+
 
 \pagebreak
 
 # Future Work and Discussion
 
-<font style='color: #000000; background-color: #FF0000'>**write chapter**</font>
+In this study, we evaluated a predictive model for retail sales using various techniques. Our best performing model was the Prophet model, which produced 28512 predictions and gave us a user score of 0.65612 at Kaggle. This placed our model in position 718 out of 892. It is hard to say if this is a good score or not, as we would have to know how much effort the other teams had put in to get the results that they did. We hope at the very least that the predictions are somewhat sensible. It is also worth mentioning that this is the only submission that we entered; other teams both above and below us in the rankings had multiple attempts.
 
-Further points to improve.
-Reference points we noticed during EDA.
-e.g.:
+There are several areas where the model could be improved in future iterations. Firstly, as demonstrated in the exploratory data analysis, stores 20, 21, 22, and 52 have relatively low correlation with the other stores. Further examination could involve an error analysis of how the predictions for these specific stores behave in terms of the difference between predicted and actual test values. However, it is possible that the top-down approach, which created pairwise store-family bears, captures these anomalies.
 
-It is easiest to discuss the above methods by first mentioning particular information that was omitted from our model and could be incorporated into further iterations of our predictive model.
+Additionally, we excluded oil data, which could be a significant omission given that the country's economy is heavily dependent on the oil price. The reason for this is two-fold: Ecuador is a member of the Organization of the Petroleum Exporting Countries and its oil-production is state-owned, which impacts the strength of the economy, as well as for the government to provide services and social supports, which in turn will affect how much money people have to spend on things. Secondly, if oil prices increase, people will have to pay more for goods in general, not only for things like electricity but also for goods in shops, and the prices in shops will likely be higher owing to increased costs of business which will presumably negatively impact how much people can purchase.
 
-Firstly, as demonstrated in the EDA, stores 20, 21, 22, and 52 have quite low correlation with the other stores.
-Further examination could involve an error analysis of how the predictions for these specific stores behave in terms of the difference between predicted and actual test values for these stores.
-However, it is hopefully the case that the top-down approach, which created pairwise store-family bears captures these anomolies.
+Another omission in our model is the lack of transactions data. It is reasonable to expect that this would improve our predictions and would be included in future iterations of our model. Similarly, public wages were not included in the model. It would be easy to incorporate this as a sort of 'holiday' variable in the Prophet model. However, one could also argue that public sector workers are a small enough section of the population that it would not have a significant effect on sales.
 
-We also excluded the oil data which is potentially a large omission given the country's economy is heavily dependent on the oil price.
-The reason for this is two-fold: Ecuador is a member of the Organization of the Petroleum Exporting Countries and its oil-production is state-owned, which impacts the strength of the economy, as well as for the government to provide services and social supports, which in turn will affect how much money people have to spend on things; secondly, if oil prices increase, people will have to pay more for goods in general, not only for things like electricity but also for goods in shops, and the prices in shops will likely be higher owing to increased costs of business which will presumably negatively impact how much people can purchase.
+Finally, the earthquake that occurred has not been explored in our EDA nor incorporated into our modeling. It is possible that the earthquake had a prolonged and large impact on the dataset. Given that earthquakes are relatively rare and unpredictable events, it would have been an option to interpolate more 'regular' values for this time period in this specific case. In our modeling, there is the implicit hope that the earthquake would be more akin to noise in the data given the rather prolonged time period in question.
 
-Additionally transactions have not been included in our model.
-It would be a reasonable expectation that this would improve our predictions and would be included in further iterations of our model.
-
-The fact that public wages were not included is another ommission.
-Perhaps this could be easily incorporated into the Prophet model as a sort of 'holiday' variable.
-However, one could also argue that the public sector workers are a small enough section of the population that it would not have a significant effect on sales.
-
-Finally, the earthquake that occurred has not been explored in our EDA nor incorporated into our modelling.
-It is possible that the earthquake had a prolonged and large impact on the dataset.
-Given earthquakes are relatively rare, unpredictable events, perhaps there would have been an option to interpolate more 'regular' values for this time period in this specific case.
-In our modelling, there is the implicit hope that the earthquake would be more akin to noise in the data given the rather prolonged time period in question.
-
--   stores 20, 21, 22, and 52, may be a little different.
--   havent used the oil price data. countrys economy is really dependent on oil price
--   Transactions havent used
--   havent used information about Wages in the public sector are paid every two weeks on the 15th and on the last day of the month. Supermarket sales could be affected by this.
--   havent taken into acount the earthquake
+In conclusion, while the model performed well in predicting retail sales, there are several areas where it could be improved in future iterations by incorporating omitted data and exploring the impact of rare events such as earthquakes.
 
 \pagebreak
 
@@ -420,6 +402,10 @@ In our modelling, there is the implicit hope that the earthquake would be more a
 ![SARIMA Diagnostics](./figs/sarima_model.png){#fig-SARIMA-Diagnostics}
 
 ![Prophet Components](./figs/prophet_components_plot.png){#fig-Prophet-Components}
+
+![Decision Tree Cheated](./figs/decision_tree.png){#fig-decision-tree-cheated}
+
+![Random Forest Cheated](./figs/rf_FINAL.png){#fig-random-forest-cheated}
 
 ![Distribution of Stores](./figs/store_sales.png){#fig-distribution-stores}
 
