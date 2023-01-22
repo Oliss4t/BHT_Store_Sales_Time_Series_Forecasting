@@ -28,7 +28,7 @@ Our tactic for model selection is as follows: simply compare the below models wi
 The assumption here is that the model that performs best under this simplified process will also perform better when the family and store categories are taken into account.
 
 The baseline methods are Exponential Smoothing, Double Exponential Smoothing, and a SARIMA model.
-These are then compared with two other models: Prophet, an algorithm by Facebook, and a Random Forest model.
+These are then compared with two other models: Prophet, an algorithm by Facebook; and decision trees (regression tree and a Random Forest).
 For each of these, where relevant, the final parameters chosen were decided upon through a mixture of EDA, trial-and-error, and hyperparameter optimization.
 
 This is a 'top-down' approach to this type of forecasting.
@@ -63,10 +63,10 @@ Additional notes for the challenge are:
 ## Preprocessing
 
 The preprocessing we done is mainly restricted to the train, test and the holidays and events data.
-The first thing we done is splitting the train data into a taining and validation set.
+The first thing we did is splitting the train data into a taining and validation set.
 The Training data will be used for training, the validation data will be used for model comparison.
 We then aggregated the train, validation and test set by date over all stores and product families to get the overall sales at a given date.
-We used that datastructure for all of the follwing models: Exponential Smoothing, Double Exponential Smoothing, SARIMA and Random Forest.
+We used that datastructure for all of the follwing models: Exponential Smoothing, Double Exponential Smoothing, SARIMA and the decision trees.
 
 For the Prophet model we additonally used the holidays and events data as well as the on-promotion feature.
 The holidays and events data needed quite some preprocessing as some national holidays have been transferred and it needs to be accounted for that.
@@ -77,7 +77,7 @@ As we havent used the regional feature we decided to only include the national e
 
 # EDA
 
-To start of we did a lot of exploratory data analysis. We will cover only the most interesting findings in the following. Additional plots are referenced in the text and can be found in the appendix.  
+To start off we did a lot of exploratory data analysis. We will cover only the most interesting findings in the following. Additional plots are referenced in the text and can be found in the appendix.  
 
 ## Transactions 
 
@@ -127,7 +127,7 @@ To better understand the data we can use the autocorrelation function (ACF) and 
 We see can clearly see (@fig-tsplot) a 7 lag period in the ACF, which corresponds to a weekly periodicity.
 That was already expected, but it is good to have some statistical backing.
 The PACF shows a bigger partial autocorrelation for the 1,6 and 7 lags.
-Those lags could be interesting to includ in the model.
+Those lags could be interesting to include in the model.
 
 Additionnally we also check the timeseries for stationarity.
 A time series is said to be stationary if its statistical properties do not change over time.
@@ -177,11 +177,11 @@ The formula is the following:
 
 Forecast Equation: $\hat{Y}_{t+1} = αy_t + α(1−α)y_{t−1} + α(1−α)^2y_{t−2} + ...$
 
-Therefore you only have to set the parameter α and decide how many previous values you want to use for the prediction.
+Therefore you only have to set the parameter $α$ and decide how many previous values you want to use for the prediction.
 We based out prediction only on the last value as a baseline and tried different numbers for alpha out.
 Our manual tries were worst then setting the optimization option = True.(@fig-ESmoothing)
 Therefore, we choose the optimized version for calculating the validation error.
-WE got the following metric scores:
+We got the following metric scores:
 
 | Model                 | RMSLE               | MSE         | MAE      |
 |-----------------------|---------------------|-------------|----------|
@@ -240,7 +240,7 @@ S is simply the season's length.
 This was found to be 7, i.e. the seasonality in the model we selected is considered to be best represented by weekly seasonality.
 Combining all, we get the SARIMA(p, d, q)(P, D, Q, s) model.
 
-In order to choose the other parameters for this SARIMA model, only a single number of differencings for both the seasonal and non-seasonal parts were needed to make the series stationary Hence, both D and d are 1.
+In order to choose the other parameters for this SARIMA model, only a single number of differencings for both the seasonal and non-seasonal parts were needed to make the series stationary. Hence, both D and d are 1.
 Next, trial-and-error was used to select the order of the autoregressive (AR) and moving average (MA) terms.
 For the moving average, the fact that there the autocorrelation plots showed peaks at lag 1 made this a good starting point for our P and p terms.
 Our choice of Q and q equaling 1 for the Moving Average parts implies that only the error term from one time point prior is being taken into account when making our next prediction.
@@ -307,9 +307,9 @@ The performance of the regression tree on our validation set is as follows:
 | Regression Tree cheated| 0.128111 | 1.104584e+10 | 78066.83 |
 | Regression Tree | 0.307477 | 4.854608e+10 | 198903.99 |
 
-The very good performance of our first version of Regression Tree and Random Forest, led us to examine our code and we had, admittedly, made a mistake in our construction of both. Our model had been allowed 'look' at points in the past, at least implicitly, when it should not have. Hence these models were essentially cheating. In a second iteration of both models, we ammend these faults. After that both models were not performing outstanding anymore.
+The very good performance of our first version of Regression Tree and Random Forest, led us to examine our code and we had, admittedly, made a mistake in our construction of both. Our model had been allowed 'look' at points in the past, at least implicitly, when it should not have. Hence these models were essentially cheating. In a second iteration of both models, we ammend these faults. After that both models were not performing outstandingly anymore.
 
-A plot of its predictions over the actual data is shown below (@fig-decision-tree). It is of cause not as good as the cheated version in @fig-decision-tree-cheated.
+A plot of its predictions over the actual data is shown below (@fig-decision-tree). It is of course not as good as the cheated version in @fig-decision-tree-cheated.
 
 ![Decision Tree](./figs/decision_tree_not_cheated.png){#fig-decision-tree}
 
@@ -377,7 +377,7 @@ The code underlying how the final predictions were made is visible in the short 
 
 In this study, we evaluated a predictive model for retail sales using various techniques. Our best performing model was the Prophet model, which produced 28512 predictions and gave us a user score of 0.65612 at Kaggle. This placed our model in position 718 out of 892. It is hard to say if this is a good score or not, as we would have to know how much effort the other teams had put in to get the results that they did. We hope at the very least that the predictions are somewhat sensible. It is also worth mentioning that this is the only submission that we entered; other teams both above and below us in the rankings had multiple attempts.
 
-There are several areas where the model could be improved in future iterations. Firstly, as demonstrated in the exploratory data analysis, stores 20, 21, 22, and 52 have relatively low correlation with the other stores. Further examination could involve an error analysis of how the predictions for these specific stores behave in terms of the difference between predicted and actual test values. However, it is possible that the top-down approach, which created pairwise store-family bears, captures these anomalies.
+There are several areas where the model could be improved in future iterations. Firstly, as demonstrated in the exploratory data analysis, stores 20, 21, 22, and 52 have relatively low correlation with the other stores. Further examination could involve an error analysis of how the predictions for these specific stores behave in terms of the difference between predicted and actual test values. However, it is possible that the top-down approach, which created pairwise store-family pairs, captures these anomalies.
 
 Additionally, we excluded oil data, which could be a significant omission given that the country's economy is heavily dependent on the oil price. The reason for this is two-fold: Ecuador is a member of the Organization of the Petroleum Exporting Countries and its oil-production is state-owned, which impacts the strength of the economy, as well as for the government to provide services and social supports, which in turn will affect how much money people have to spend on things. Secondly, if oil prices increase, people will have to pay more for goods in general, not only for things like electricity but also for goods in shops, and the prices in shops will likely be higher owing to increased costs of business which will presumably negatively impact how much people can purchase.
 
