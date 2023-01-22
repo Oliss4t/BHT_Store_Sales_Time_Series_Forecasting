@@ -5,10 +5,10 @@ The data is from a previous kaggel competition: https://www.kaggle.com/competiti
 
 The final report is the [Learning_Optimazation_Report.pdf](./Learning_Optimazation_Report.pdf)
 
-The EDA + Exponential Smoothing + Double Exponential Smoothing and SARIMA model can be found [here](./EDA_and_preprocessing.ipynb)
-The Prophet model was build [here](./prophet.ipynb)
-The Tree base models were build [here](./Decision Tree and Random Forest.ipynb)
-The creation of the distribution for Top-Down approach can be found [here](./Distribution for Top-Down Approach)
+* The EDA + Exponential Smoothing + Double Exponential Smoothing and SARIMA model can be found [here](./EDA_and_preprocessing.ipynb)
+* The Prophet model was build [here](./prophet.ipynb)
+* The Tree base models were build [here](./Decision Tree and Random Forest.ipynb)
+* The creation of the distribution for Top-Down approach can be found [here](./Distribution for Top-Down Approach)
 
 Project focal points:
 
