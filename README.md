@@ -7,7 +7,7 @@ The final report is the [Learning_Optimazation_Report.pdf](./Learning_Optimazati
 
 * The EDA + Exponential Smoothing + Double Exponential Smoothing and SARIMA model can be found [here](./EDA_and_preprocessing.ipynb)
 * The Prophet model was build [here](./prophet.ipynb)
-* The Tree base models were build [here](./"Decision Tree and Random Forest.ipynb")
+* The Tree base models were build in file "Decision Tree and Random Forest.ipynb".
 * The creation of the distribution for Top-Down approach can be found [here](./testing.ipynb)
 
 Project focal points:
