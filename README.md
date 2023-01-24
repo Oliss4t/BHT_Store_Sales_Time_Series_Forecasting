@@ -3,6 +3,13 @@
 This is a project done in the learning optimazation class.
 The data is from a previous kaggel competition: https://www.kaggle.com/competitions/store-sales-time-series-forecasting/overview/frequently-asked-questions
 
+The final report is the [Learning_Optimazation_Report.pdf](./Learning_Optimazation_Report.pdf)
+
+* The EDA + Exponential Smoothing + Double Exponential Smoothing and SARIMA model can be found [here](./EDA_and_preprocessing.ipynb)
+* The Prophet model was build [here](./prophet.ipynb)
+* The Tree base models were build in file "Decision Tree and Random Forest.ipynb".
+* The creation of the distribution for Top-Down approach can be found [here](./testing.ipynb)
+
 Project focal points:
 
 * Demand Forecasting / Time Series Forecasting
@@ -13,10 +20,4 @@ Project focal points:
 The project should focus on at least one of the following three tasks: 
 * comparing different time series forecasting models
 * optimizing the hyperparameters of a ML or Deep Neural Network
-* automizing the model selection 
-
-How to generate the report pdf based on the markdown file:
-1) add visual studio extension: Markdown PDF by yzane
-2) Open the Markdown file
-3) Press F1 or Ctrl+Shift+P
-4) Type export and select e.g. markdown-pdf: Export (pdf)
+* automizing the model selection
