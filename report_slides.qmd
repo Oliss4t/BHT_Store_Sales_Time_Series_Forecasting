@@ -1,0 +1,229 @@
+---
+title: "Learning Optimazation Report: Store Sales - Time Series Forecasting"
+author: "Conor Fallon; Tassilo Henninger"
+format: 
+  revealjs
+smaller: True
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+## Project Goal and Outline
+
+- build a time-series forecasting model which will make predictions for 15 days after the last date in the train data.
+
+- real-life retailer 'Corporación Favorita' from Ecuador and contains over 1,000,000 entries
+
+- train/validation/test
+
+- Exponential Smoothing, Double Exponential Smoothing, SARIMA model, Prophet and Decision Trees (regression tree and a Random Forest).
+
+- 'top-down' approach
+
+## Data
+
+- 54 stores and 33 product families for the timeperiod of 2013-01-01 to 2017-08-31.
+
+The given data consists of the following 6 files:
+
+-   Train: contains time series of the stores and the product families combination. Additionally we have the onpromotion column.
+-   Test: same structure as train.
+-   Store: gives some information about stores such as city, state, type, cluster.
+-   Transactions: contains the number of total transactions for each store at a given date.
+-   Holidays and Events: contains information of holidays during the timeperiod. 
+-   Daily Oil Price: contains the oil price at a given date. 
+
+## Preprocessing
+
+- splitting the train data into a taining and validation set.
+
+- aggregated the train, validation and test set by date over all stores and product families to get the overall sales at a given date.
+
+- holidays and events data: account for national holidays that have been transferred and restricted to only include the national events and holdays as they apply for the whole contry and therefore all stores.
+
+# EDA
+
+## Transactions 1
+
+![transactions_boxplot](./figs/transactions_boxplot.png){#fig-transactions-boxplot}
+
+## Transactions 2
+
+![transactions_timeline_by_store](./figs/transactions_timeline_by_store.png){#fig-timeline_by_store}
+
+## Transactions 3
+
+![transactions_dayofweek](./figs/transactions_dayofweek.png){#fig-transactions-dayofweek}
+
+
+## Sales 1
+
+![correlation matrix among stores](./figs/correlations_among_stores.png){#fig-correlation-matrix}
+
+
+## Sales 2
+
+
+
+![Transactions DayofWeek](./figs/timeplot_overall_sales.png){#fig-timeplot_overall_sales width="80%"}
+
+## Sales 3
+
+| date       | sales    |
+|------------|----------|
+| 2013-01-01 | 2511.62  |
+| 2014-01-01 | 8602.07  |
+| 2015-01-01 | 12773.62 |
+| 2016-01-01 | 16433.39 |
+| 2017-01-01 | 12082.50 |
+
+
+## Sales 4
+
+![Seasonal Plot for Sales over Months](./figs/seasonal_plot_for_sales_over_months.png){#fig-seasonal-plot}
+
+
+## Autocorrelation - How are timeseries correlated to their lags?
+
+![Autocorrelation](./figs/tsplot_30.png){#fig-tsplot height="100%"}
+
+## STL decomposition
+
+![STL Decomposition](./figs/stl_decomposition.png){#fig-stl-decomposition height="100%"}
+
+
+# Forecasting
+
+## Baseline model - Exponential Smoothing
+
+![Exponential Smoothing](./figs/SimpleExpSmoothing.png){#fig-ESmoothing}
+
+
+| Model                 | RMSLE               | MSE         | MAE      |
+|-----------------------|---------------------|-------------|----------|
+| Exponential Smoothing | 0.13876294591305696 | 1.316025e10 | 99941.04 |
+
+## Double Exponential Smoothing
+
+![Double Exponential Smoothing](./figs/HOLT.png){#fig-DESmoothing}
+
+| Model                        | RMSLE              | MSE         | MAE       |
+|------------------------------|--------------------|-------------|-----------|
+| Double Exponential Smoothing | 0.1393858049730297 | 1.327847e10 | 100600.89 |
+
+
+## SARIMA model 1
+
+
+![SARIMA model](./figs/SARIMA.png){#fig-sarima}
+
+| Model  | RMSLE             | MSE         | MAE      |
+|--------|-------------------|-------------|----------|
+| SARIMA | 0.134025810826792 | 1.391188e10 | 83125.15 |
+
+## SARIMA model 2
+
+![SARIMA Diagnostics](./figs/sarima_model.png){#fig-SARIMA-Diagnostics}
+
+
+## Prophet 1
+
+![Prophet & Holidays](./figs/prophet_holidays.png){#fig-prophet-holidays}
+
+| Model                         | RMSLE               | MSE         | MAE      |
+|-------------------------------|---------------------|-------------|----------|
+| Prophet Baseline              | 0.10672917726787304 | 0.866192e10 | 67894.59 |
+| Prophet +Holidays             | 0.10471472504386517 | 0.840120e10 | 65890.04 |
+| Prophet +Holidays_OnPromotion | 0.10471472504386517 | 0.840120e10 | 65890.04 |
+
+
+## Prophet 2
+
+![Prophet Components](./figs/prophet_components_plot.png){#fig-Prophet-Components}
+
+
+## Regression Tree: cheated 
+
+![Decision Tree Cheated](./figs/decision_tree.png){#fig-decision-tree-cheated}
+
+| model                   | RMSLE    | MSE          | MAE       |
+|-------------------------|----------|--------------|-----------|
+| Regression Tree cheated | 0.128111 | 1.104584e+10 | 78066.83  |
+| Regression Tree         | 0.307477 | 4.854608e+10 | 198903.99 |
+
+## Regression Tree: valid 
+
+![Decision Tree](./figs/decision_tree_not_cheated.png){#fig-decision-tree}
+
+| model                   | RMSLE    | MSE          | MAE       |
+|-------------------------|----------|--------------|-----------|
+| Regression Tree cheated | 0.128111 | 1.104584e+10 | 78066.83  |
+| Regression Tree         | 0.307477 | 4.854608e+10 | 198903.99 |
+
+
+
+
+
+
+## Random Forest: cheated
+
+![Random Forest Cheated](./figs/rf_FINAL.png){#fig-random-forest-cheated}
+
+
+| model                 | RMSLE    | MSE           | MAE       |
+|-----------------------|----------|---------------|-----------|
+| Random Forest cheated | 0.083058 | 0.4648461e+10 | 46158.14  |
+| Random Forest         | 0.173279 | 2.4810410e+10 | 144618.02 |
+
+
+## Random Forest: valid
+
+![Random Forest](./figs/rf_FINAL_not_cheated.png){#fig-random-forest}
+
+
+| model                 | RMSLE    | MSE           | MAE       |
+|-----------------------|----------|---------------|-----------|
+| Random Forest cheated | 0.083058 | 0.4648461e+10 | 46158.14  |
+| Random Forest         | 0.173279 | 2.4810410e+10 | 144618.02 |
+
+
+## Model Comparisson
+
+| Model                        | RMSLE    | MSE          | MAE       |
+|------------------------------|----------|--------------|-----------|
+| Exponential Smoothing        | 0.138762 | 1.316025e10  | 99941.04  |
+| Double Exponential Smoothing | 0.139385 | 1.327847e10  | 100600.89 |
+| SARIMA                       | 0.134025 | 1.391188e10  | 83125.15  |
+| Prophet +Holidays            | 0.104714 | 0.840120e10  | 65890.04  |
+| Regression Tree              | 0.307477 | 4.854608e+10 | 198903.99 |
+| Random Forest                | 0.173279 | 2.481041e+10 | 144618.02 |
+
+
+
+## Distribution for Top-Down Approach: Stores
+
+
+![Distribution of Stores](./figs/store_sales.png){#fig-distribution-stores}
+
+
+## Distribution for Top-Down Approach: Families
+
+![Distribution of Families](./figs/family_sales.png){#fig-distribution-families}
+
+## Prediction of the Final Model
+
+- produced 28512 predictions and these were submitted to Kaggle
+- giving us a user score of 0.65612, which placed our model in position 718 out of 892.
+
+![Prophet Prediction on Test Data](./figs/prohet_final_test_prediction.png){#fig-prophet-test-prediction}
+
+## Future Work and Discussion
+
+There are several areas where the model could be improved in future iterations.
+
+- stores 20, 21, 22, and 52 have relatively low correlation with the other stores
+- oil data
+- transactions data
+- public wages
+- earthquake
